@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="销售清单及合同生成器">
+    <meta name="theme-color" content="#1e40af">
+    <title>销售清单及合同生成器</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>">
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <style>
+        :root{--primary:#1e40af;--primary-dark:#1e3a8a;--primary-light:#3b82f6;--accent:#059669;--bg:#f8fafc;--card:#fff;--shadow:0 4px 20px rgba(30,64,175,.12);--br:12px;--text:#1e293b;--muted:#64748b;--border:#e2e8f0;--danger:#dc2626;--warning:#d97706}
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'PingFang SC','Microsoft YaHei',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
+        .container{max-width:1200px;margin:0 auto;padding:20px}
+        header{background:linear-gradient(135deg,var(--primary),var(--accent));color:#fff;padding:28px 32px;border-radius:var(--br);margin-bottom:24px;box-shadow:var(--shadow)}
+        header h1{font-size:26px;margin-bottom:6px}header p{opacity:.9;font-size:14px}
+        .step{background:var(--card);border-radius:var(--br);padding:24px;box-shadow:var(--shadow);margin-bottom:20px}
+        .step-title{font-size:16px;font-weight:700;color:var(--primary);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+        .step-title .num{background:var(--primary);color:#fff;width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:14px}
+        .upload-zone{border:2px dashed var(--border);border-radius:8px;padding:40px 20px;text-align:center;cursor:pointer;transition:.3s;background:#f8fafc}
+        .upload-zone:hover{border-color:var(--primary);background:#eff6ff}
+        .file-info{margin-top:12px;padding:12px;background:#eff6ff;border-radius:8px;display:none}
+        .file-info.show{display:block}
+        .file-info .name{font-weight:600;color:var(--primary-dark)}
+        .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+        @media(max-width:768px){.form-grid{grid-template-columns:1fr}}
+        .form-group{display:flex;flex-direction:column;gap:6px}
+        .form-group label{font-size:13px;font-weight:600;color:var(--muted)}
+        .form-group input,.form-group select,.form-group textarea{padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;transition:.2s}
+        .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(30,64,175,.1)}
+        .form-group textarea{resize:vertical;min-height:60px}
+        .sub-title{font-size:14px;font-weight:700;color:var(--primary);margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #dbeafe}
+        .btn{display:inline-flex;align-items:center;gap:6px;padding:12px 24px;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600;transition:.2s}
+        .btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff}
+        .btn-primary:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(30,64,175,.4)}
+        .btn-success{background:linear-gradient(135deg,var(--accent),#047857);color:#fff}
+        .btn-success:hover{transform:translateY(-2px)}
+        .btn-secondary{background:#e2e8f0;color:#475569}
+        .btn-secondary:hover{background:#cbd5e1}
+        .btn-sm{padding:8px 16px;font-size:13px}
+        .action-bar{display:flex;justify-content:center;gap:12px;margin-bottom:24px;flex-wrap:wrap}
+        .tabs{display:flex;gap:4px;background:#fff;padding:6px;border-radius:var(--br);box-shadow:var(--shadow);margin-bottom:20px}
+        .tab-btn{padding:12px 24px;border:none;background:transparent;border-radius:8px;cursor:pointer;font-size:15px;font-weight:600;color:var(--muted);transition:.2s}
+        .tab-btn:hover{background:#f1f5f9;color:var(--primary)}
+        .tab-btn.active{background:var(--primary);color:#fff}
+        .tab-content{display:none}.tab-content.active{display:block}
+        .doc-preview{background:#fff;border:1px solid var(--border);border-radius:8px;padding:40px;min-height:600px;box-shadow:var(--shadow)}
+        .toast{position:fixed;top:20px;right:20px;padding:12px 24px;border-radius:8px;color:#fff;font-size:14px;z-index:9999;animation:slideIn .3s}
+        .toast-success{background:var(--accent)}.toast-error{background:var(--danger)}.toast-info{background:var(--primary)}
+        @keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+        footer{text-align:center;padding:24px;color:var(--muted);font-size:12px}
+        .hint{font-size:12px;color:var(--muted);margin-top:4px}
+    </style>
+</head>
+<body>
+<div class="container">
+    <header><h1>📝 销售清单及合同生成器</h1><p>上传销售清单，自动生成规范销售单及购销合同</p></header>
+
+    <!-- Step 1: 上传 -->
+    <div class="step">
+        <div class="step-title"><span class="num">1</span>上传销售清单</div>
+        <div class="upload-zone" id="uploadZone">
+            <div style="font-size:48px;margin-bottom:8px">📄</div>
+            <div>点击或拖拽上传 Excel 文件</div>
+            <div class="hint">支持 .xlsx / .xls / .csv，需包含：品名、规格、数量、单价、金额</div>
+        </div>
+        <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display:none">
+        <div class="file-info" id="fileInfo"><div class="name" id="fileName"></div><div class="hint" id="fileMeta"></div></div>
+    </div>
+
+    <!-- Step 2: 双方信息 -->
+    <div class="step">
+        <div class="step-title"><span class="num">2</span>填写双方信息</div>
+        <div class="form-grid">
+            <div>
+                <div class="sub-title">🏢 甲方（买方）</div>
+                <div class="form-group"><label>公司名称 *</label><input id="a_name" placeholder="买方公司全称"></div>
+                <div class="form-group"><label>统一社会信用代码</label><input id="a_credit" placeholder="18位信用代码"></div>
+                <div class="form-group"><label>地址</label><input id="a_addr" placeholder="公司注册地址"></div>
+                <div class="form-group"><label>联系人 *</label><input id="a_contact" placeholder="联系人姓名"></div>
+                <div class="form-group"><label>联系电话</label><input id="a_phone" placeholder="联系电话"></div>
+                <div class="form-group"><label>交货地址</label><input id="a_delivery" placeholder="如与注册地址不同请填写"></div>
+            </div>
+            <div>
+                <div class="sub-title">🏭 乙方（卖方）</div>
+                <div class="form-group"><label>公司名称 *</label><input id="b_name" placeholder="卖方公司全称"></div>
+                <div class="form-group"><label>统一社会信用代码</label><input id="b_credit" placeholder="18位信用代码"></div>
+                <div class="form-group"><label>地址</label><input id="b_addr" placeholder="公司注册地址"></div>
+                <div class="form-group"><label>联系人 *</label><input id="b_contact" placeholder="联系人姓名"></div>
+                <div class="form-group"><label>联系电话</label><input id="b_phone" placeholder="联系电话"></div>
+                <div class="form-group"><label>开户银行</label><input id="b_bank" placeholder="开户银行全称"></div>
+                <div class="form-group"><label>银行账号</label><input id="b_account" placeholder="银行账号"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 3: 合同参数 -->
+    <div class="step">
+        <div class="step-title"><span class="num">3</span>合同参数</div>
+        <div class="form-grid">
+            <div class="form-group"><label>合同编号</label><input id="contract_no" placeholder="自动生成，可修改"></div>
+            <div class="form-group"><label>签订日期</label><input id="sign_date" type="date"></div>
+            <div class="form-group"><label>签订地点</label><input id="sign_place" placeholder="如：西藏自治区拉萨市"></div>
+            <div class="form-group"><label>交货期限</label><input id="delivery_date" placeholder="如：合同签订后15个工作日内"></div>
+            <div class="form-group"><label>付款方式</label><select id="pay_method"><option value="合同签订后一次性付清">一次性付清</option><option value="货到验收合格后一次性付清" selected>货到验收合格后付清</option><option value="预付30%，货到验收合格后付70%">预付30%+货到70%</option><option value="预付50%，货到验收合格后付50%">预付50%+货到50%</option><option value="月结30天">月结30天</option><option value="月结60天">月结60天</option></select></div>
+            <div class="form-group"><label>违约金比例</label><input id="penalty_rate" value="0.5" placeholder="每日千分之">%</div>
+        </div>
+    </div>
+
+    <div class="action-bar">
+        <button class="btn btn-primary" id="generateBtn" onclick="generate()" disabled>📋 生成销售单及合同</button>
+        <button class="btn btn-secondary" onclick="clearAll()">🗑️ 清空</button>
+    </div>
+
+    <!-- Preview -->
+    <div id="previewSection" style="display:none">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab(0)">📑 销售清单</button>
+            <button class="tab-btn" onclick="switchTab(1)">📜 购销合同</button>
+        </div>
+        <div class="action-bar" style="margin-bottom:16px">
+            <button class="btn btn-success btn-sm" onclick="printDoc()">🖨️ 打印当前</button>
+            <button class="btn btn-primary btn-sm" onclick="exportWord()">📥 导出Word</button>
+        </div>
+        <div class="tab-content active" id="tab0"><div class="doc-preview" id="salesPreview"></div></div>
+        <div class="tab-content" id="tab1"><div class="doc-preview" id="contractPreview"></div></div>
+    </div>
+</div>
+<footer>© 2026 销售清单及合同生成器 | 开发者：张洪杰 | 侵权必究</footer>
+
+<script>
+let items=[],curTab=0;
+try{var savedB=JSON.parse(localStorage.getItem('contract_party_b')||'{}');if(savedB.b_name)Object.keys(savedB).forEach(k=>{const el=document.getElementById(k);if(el)el.value=savedB[k]})}catch(e){}
+
+// 自动生成合同编号
+const today=new Date();
+document.getElementById('contract_no').value='XZZH-'+today.getFullYear()+(today.getMonth()+1+'').padStart(2,'0')+(today.getDate()+'').padStart(2,'0')+'-'+String(Math.floor(Math.random()*900)+100);
+document.getElementById('sign_date').value=today.toISOString().split('T')[0];
+
+// 上传
+const uploadZone=document.getElementById('uploadZone'),fileInput=document.getElementById('fileInput');
+uploadZone.addEventListener('click',()=>fileInput.click());
+uploadZone.addEventListener('dragover',e=>{e.preventDefault();uploadZone.style.borderColor='var(--primary)'});
+uploadZone.addEventListener('dragleave',()=>uploadZone.style.borderColor='');
+uploadZone.addEventListener('drop',e=>{e.preventDefault();uploadZone.style.borderColor='';if(e.dataTransfer.files.length)handleFile(e.dataTransfer.files[0])});
+fileInput.addEventListener('change',e=>{if(e.target.files.length)handleFile(e.target.files[0])});
+
+function handleFile(file){
+    const ext=file.name.split('.').pop().toLowerCase();
+    if(!['xlsx','xls','csv'].includes(ext)){toast('请上传Excel或CSV文件','error');return}
+    const reader=new FileReader();
+    reader.onload=e=>{
+        try{
+            const wb=XLSX.read(e.target.result,{type:'array'});
+            const data=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});
+            items=data.map(r=>({
+                name:r['品名']||r['产品名']||'',
+                spec:r['规格']||r['规格型号']||'',
+                qty:parseFloat(r['数量'])||0,
+                price:parseFloat(r['单价'])||0,
+                amount:parseFloat(r['金额'])||0
+            })).filter(it=>it.name);
+            document.getElementById('fileInfo').classList.add('show');
+            document.getElementById('fileName').textContent=file.name;
+            document.getElementById('fileMeta').textContent=`共${items.length}行，总金额 ¥${items.reduce((s,i)=>s+i.amount,0).toLocaleString('zh-CN',{minimumFractionDigits:2})}`;
+            document.getElementById('generateBtn').disabled=false;
+            toast(file.name+' 上传成功','success');
+        }catch(err){toast('解析失败: '+err.message,'error')}
+    };
+    reader.readAsArrayBuffer(file);
+}
+
+function getVal(id){return document.getElementById(id).value.trim()}
+function clearAll(){items=[];document.getElementById('fileInfo').classList.remove('show');document.getElementById('generateBtn').disabled=true;document.getElementById('previewSection').style.display='none';fileInput.value=''}
+function switchTab(i){curTab=i;document.querySelectorAll('.tab-btn').forEach((b,j)=>b.classList.toggle('active',j===i));document.querySelectorAll('.tab-content').forEach((c,j)=>c.classList.toggle('active',j===i))}
+function toast(m,t='info'){const e=document.createElement('div');e.className='toast toast-'+t;e.textContent=m;document.body.appendChild(e);setTimeout(()=>e.remove(),3000)}
+
+// 金额大写
+function amountCN(n){
+    if(n===0)return'零元整';
+    const d=['零','壹','贰','叁','肆','伍','陆','柒','捌','玖'];
+    const r=['','拾','佰','仟'],b=['','万','亿'];
+    const intP=Math.floor(Math.abs(n)),decP=Math.round(Math.abs(n)*100)%100;
+    let s='',zeroFlag=0,i=0;
+    let num=intP;
+    while(num>0){
+        const p=num%10;
+        if(p===0){zeroFlag++}else{if(zeroFlag>0)s=d[0]+s;zeroFlag=0;s=d[p]+r[i%4]+s}
+        if(i%4===3&&p>0)s=b[Math.floor(i/4)]+s;
+        num=Math.floor(num/10);i++;
+    }
+    if(s==='')s=d[0];
+    s+='元';
+    if(decP>0){const j=Math.floor(decP/10),f=decP%10;if(j>0)s+=d[j]+'角';if(f>0)s+=d[f]+'分'}else{s+='整'}
+    return(n<0?'负':'')+s;
+}
+
+function generate(){
+    if(!items.length){toast('请先上传销售清单','error');return}
+    const aName=getVal('a_name'),bName=getVal('b_name');
+    if(!aName||!bName){toast('请填写甲方和乙方公司名称','error');return}
+    
+    // 保存乙方信息
+    const bFields=['b_name','b_credit','b_addr','b_contact','b_phone','b_bank','b_account'];
+    const bSave={};bFields.forEach(k=>bSave[k]=getVal(k));
+    localStorage.setItem('contract_party_b',JSON.stringify(bSave));
+
+    const totalAmt=items.reduce((s,i)=>s+i.amount,0);
+    const totalQty=items.reduce((s,i)=>s+i.qty,0);
+    const info={
+        aName,bName,
+        aCredit:getVal('a_credit'),aAddr:getVal('a_addr'),aContact:getVal('a_contact'),aPhone:getVal('a_phone'),aDelivery:getVal('a_delivery')||getVal('a_addr'),
+        bCredit:getVal('b_credit'),bAddr:getVal('b_addr'),bContact:getVal('b_contact'),bPhone:getVal('b_phone'),bBank:getVal('b_bank'),bAccount:getVal('b_account'),
+        contractNo:getVal('contract_no'),signDate:getVal('sign_date'),signPlace:getVal('sign_place'),
+        deliveryDate:getVal('delivery_date')||'合同签订后15个工作日内',payMethod:getVal('pay_method'),penaltyRate:getVal('penalty_rate')||'0.5',
+        totalAmt,totalQty,amtCN:amountCN(totalAmt)
+    };
+
+    document.getElementById('salesPreview').innerHTML=genSalesList(info);
+    document.getElementById('contractPreview').innerHTML=genContract(info);
+    document.getElementById('previewSection').style.display='block';
+    curTab=0;switchTab(0);
+    toast('生成成功！','success');
+}
+
+function genSalesList(info){
+    const rows=items.map((it,i)=>`<tr><td style="text-align:center">${i+1}</td><td>${it.name}</td><td style="text-align:center">${it.spec||'-'}</td><td style="text-align:center">${it.qty}</td><td style="text-align:right">${it.price.toFixed(2)}</td><td style="text-align:right">${it.amount.toFixed(2)}</td></tr>`).join('');
+    return`<div style="font-family:'SimSun','宋体',serif;max-width:800px;margin:0 auto">
+    <h2 style="text-align:center;font-size:22px;margin-bottom:4px">销 售 清 单</h2>
+    <div style="text-align:center;color:#666;font-size:13px;margin-bottom:20px">编号：${info.contractNo}　　日期：${info.signDate}</div>
+    <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:16px">
+        <tr><td style="width:50%"><strong>买方（甲方）：</strong>${info.aName}</td><td><strong>卖方（乙方）：</strong>${info.bName}</td></tr>
+        <tr><td><strong>地址：</strong>${info.aAddr||'-'}</td><td><strong>地址：</strong>${info.bAddr||'-'}</td></tr>
+        <tr><td><strong>联系人：</strong>${info.aContact||'-'}　<strong>电话：</strong>${info.aPhone||'-'}</td><td><strong>联系人：</strong>${info.bContact||'-'}　<strong>电话：</strong>${info.bPhone||'-'}</td></tr>
+    </table>
+    <table style="width:100%;border-collapse:collapse;font-size:12px;border-top:2px solid #000;border-bottom:2px solid #000">
+        <thead><tr style="background:#f0f0f0"><th style="border:1px solid #ccc;padding:8px 6px;width:40px">序号</th><th style="border:1px solid #ccc;padding:8px 6px">品名</th><th style="border:1px solid #ccc;padding:8px 6px;width:100px">规格</th><th style="border:1px solid #ccc;padding:8px 6px;width:60px">数量</th><th style="border:1px solid #ccc;padding:8px 6px;width:80px">单价</th><th style="border:1px solid #ccc;padding:8px 6px;width:100px">金额</th></tr></thead>
+        <tbody>${rows}
+        <tr style="font-weight:700;background:#f8f8f8"><td colspan="3" style="border:1px solid #ccc;padding:8px;text-align:right">合计</td><td style="border:1px solid #ccc;padding:8px;text-align:center">${info.totalQty}</td><td style="border:1px solid #ccc;padding:8px">-</td><td style="border:1px solid #ccc;padding:8px;text-align:right">${info.totalAmt.toFixed(2)}</td></tr></tbody>
+    </table>
+    <div style="margin:16px 0;font-size:13px"><strong>合计金额（大写）：</strong>${info.amtCN}　　<strong>（小写）：</strong>¥${info.totalAmt.toFixed(2)}</div>
+    <div style="display:flex;justify-content:space-between;margin-top:60px;font-size:13px">
+        <div style="width:45%"><strong>甲方（买方）：</strong><br><br><br>签章：______________　　日期：__________</div>
+        <div style="width:45%"><strong>乙方（卖方）：</strong><br><br><br>签章：______________　　日期：__________</div>
+    </div>
+    </div>`;
+}
+
+function genContract(info){
+    const rows=items.map((it,i)=>`<tr><td style="text-align:center">${i+1}</td><td>${it.name}</td><td style="text-align:center">${it.spec||'-'}</td><td style="text-align:center">${it.qty}</td><td style="text-align:right">${it.price.toFixed(2)}</td><td style="text-align:right">${it.amount.toFixed(2)}</td></tr>`).join('');
+    const pr=info.penaltyRate;
+    return`<div style="font-family:'SimSun','宋体',serif;max-width:800px;margin:0 auto;font-size:14px;line-height:1.8">
+    <h2 style="text-align:center;font-size:22px;margin-bottom:4px">购 销 合 同</h2>
+    <div style="text-align:center;color:#666;font-size:13px;margin-bottom:20px">合同编号：${info.contractNo}</div>
+    <p style="margin-bottom:12px">签订日期：<u>　${info.signDate}　</u>　　签订地点：<u>　${info.signPlace||'________'}　</u></p>
+    <p style="margin-bottom:8px"><strong>甲方（买方）：</strong>${info.aName}${info.aCredit?'　　统一社会信用代码：'+info.aCredit:''}</p>
+    <p style="margin-bottom:8px">地址：${info.aAddr||'________'}　　联系人：${info.aContact||'________'}　　电话：${info.aPhone||'________'}</p>
+    <p style="margin-bottom:8px"><strong>乙方（卖方）：</strong>${info.bName}${info.bCredit?'　　统一社会信用代码：'+info.bCredit:''}</p>
+    <p style="margin-bottom:8px">地址：${info.bAddr||'________'}　　联系人：${info.bContact||'________'}　　电话：${info.bPhone||'________'}</p>
+    <p style="margin-bottom:8px">开户银行：${info.bBank||'________'}　　银行账号：${info.bAccount||'________'}</p>
+    <p style="margin:16px 0;text-indent:2em">根据《中华人民共和国民法典》及相关法律法规的规定，甲乙双方在平等、自愿、公平、诚实信用的原则基础上，经协商一致，就甲方向乙方购买产品事宜，达成如下协议：</p>
+
+    <p style="font-weight:700;margin:16px 0 8px">第一条　产品名称、规格、数量及金额</p>
+    <table style="width:100%;border-collapse:collapse;font-size:12px;border-top:2px solid #000;border-bottom:2px solid #000">
+        <thead><tr style="background:#f0f0f0"><th style="border:1px solid #ccc;padding:6px;width:40px">序号</th><th style="border:1px solid #ccc;padding:6px">品名</th><th style="border:1px solid #ccc;padding:6px;width:100px">规格</th><th style="border:1px solid #ccc;padding:6px;width:60px">数量</th><th style="border:1px solid #ccc;padding:6px;width:80px">单价(元)</th><th style="border:1px solid #ccc;padding:6px;width:100px">金额(元)</th></tr></thead>
+        <tbody>${rows}
+        <tr style="font-weight:700;background:#f8f8f8"><td colspan="3" style="border:1px solid #ccc;padding:6px;text-align:right">合计</td><td style="border:1px solid #ccc;padding:6px;text-align:center">${info.totalQty}</td><td style="border:1px solid #ccc;padding:6px">-</td><td style="border:1px solid #ccc;padding:6px;text-align:right">${info.totalAmt.toFixed(2)}</td></tr></tbody>
+    </table>
+    <p style="margin:8px 0;font-size:13px">合同总金额（大写）：<strong>${info.amtCN}</strong>　（小写）：¥${info.totalAmt.toFixed(2)}</p>
+
+    <p style="font-weight:700;margin:16px 0 8px">第二条　质量标准</p>
+    <p>1. 乙方提供的产品应符合国家相关质量标准和行业规范，符合甲方要求的规格和技术参数。</p>
+    <p>2. 产品应具备相应的合格证明文件及检测报告（如适用）。</p>
+    <p>3. 产品的质量保证期自验收合格之日起不少于12个月，质保期内因产品质量问题造成的损失由乙方承担。</p>
+
+    <p style="font-weight:700;margin:16px 0 8px">第三条　交付方式及期限</p>
+    <p>1. 交货方式：乙方负责将产品运送至甲方指定地点。</p>
+    <p>2. 交货地址：<u>　${info.aDelivery||info.aAddr||'________'}　</u></p>
+    <p>3. 交货期限：<u>　${info.deliveryDate}　</u>。</p>
+    <p>4. 运输费用及运输途中的风险由乙方承担。</p>
+
+    <p style="font-weight:700;margin:16px 0 8px">第四条　验收</p>
+    <p>1. 甲方应在收到产品后5个工作日内进行验收。</p>
+    <p>2. 验收标准：按本合同第一条约定的品名、规格、数量及第二条质量标准进行验收。</p>
+    <p>3. 如产品不符合约定，甲方有权拒收，乙方应在收到拒收通知后5日内更换或补足合格产品。</p>
+    <p>4. 验收合格后，甲方应签署验收确认单。</p>
+
+    <p style="font-weight:700;margin:16px 0 8px">第五条　付款方式及期限</p>
+    <p>1. 付款方式：<u>　${info.payMethod}　</u>。</p>
+    <p>2. 付款方式为银行转账的，甲方将款项汇入乙方指定银行账户。</p>
+    <p>3. 乙方应在收到货款后及时向甲方开具合法有效的增值税发票。</p>
+
+    <p style="font-weight:700;margin:16px 0 8px">第六条　包装标准</p>
+    <p>产品包装应符合国家及行业标准，满足运输及储存要求，确保产品在运输过程中不受损坏。因包装不当造成产品损坏的，由乙方承担责任。</p>
+
+    <p style="font-weight:700;margin:16px 0 8px">第七条　违约责任</p>
+    <p>1. 乙方逾期交货的，每逾期一日，应向甲方支付合同总金额的<u>　${pr}%　</u>作为违约金；逾期超过15日的，甲方有权解除合同，乙方应返还已收取的款项并赔偿甲方因此遭受的损失。</p>
+    <p>2. 甲方逾期付款的，每逾期一日，应向乙方支付未付金额的<u>　${pr}%　</u>作为违约金。</p>
+    <p>3. 产品质量不符合约定的，乙方应免费更换或退货，并承担由此给甲方造成的全部损失。</p>
+    <p>4. 任何一方违反本合同其他约定的，应承担由此给对方造成的实际损失。</p>
+
+    <p style="font-weight:700;margin:16px 0 8px">第八条　不可抗力</p>
+    <p>因不可抗力事件（包括但不限于自然灾害、战争、政府行为、疫情等）导致不能履行本合同的，根据不可抗力的影响，部分或全部免除受影响方的责任。但受影响方应在事件发生后3日内书面通知对方，并在15日内提供相关证明文件。</p>
+
+    <p style="font-weight:700;margin:16px 0 8px">第九条　争议解决</p>
+    <p>本合同在履行过程中发生争议，双方应首先协商解决；协商不成的，任何一方均可向合同签订地有管辖权的人民法院提起诉讼。</p>
+
+    <p style="font-weight:700;margin:16px 0 8px">第十条　其他约定</p>
+    <p>1. 本合同一式两份，甲乙双方各执一份，具有同等法律效力。</p>
+    <p>2. 本合同自双方签字（盖章）之日起生效。</p>
+    <p>3. 本合同未尽事宜，双方可另行签订补充协议，补充协议与本合同具有同等法律效力。</p>
+    <p>4. 本合同的传真件、扫描件与原件具有同等法律效力。</p>
+
+    <div style="margin-top:40px;font-size:14px">
+        <div style="display:flex;justify-content:space-between">
+            <div style="width:45%">
+                <p><strong>甲方（买方）：</strong>${info.aName}</p>
+                <p style="margin-top:30px">法定代表人或授权代表：</p>
+                <p style="border-bottom:1px solid #000;width:200px;margin:8px 0">&nbsp;</p>
+                <p>签章：</p>
+                <p style="border-bottom:1px solid #000;width:200px;margin:8px 0">&nbsp;</p>
+                <p>日期：________年____月____日</p>
+            </div>
+            <div style="width:45%">
+                <p><strong>乙方（卖方）：</strong>${info.bName}</p>
+                <p style="margin-top:30px">法定代表人或授权代表：</p>
+                <p style="border-bottom:1px solid #000;width:200px;margin:8px 0">&nbsp;</p>
+                <p>签章：</p>
+                <p style="border-bottom:1px solid #000;width:200px;margin:8px 0">&nbsp;</p>
+                <p>日期：________年____月____日</p>
+            </div>
+        </div>
+    </div>
+    </div>`;
+}
+
+function printDoc(){
+    const content=curTab===0?document.getElementById('salesPreview').innerHTML:document.getElementById('contractPreview').innerHTML;
+    const title=curTab===0?'销售清单':'购销合同';
+    const w=window.open('','_blank');
+    w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>${title}</title>
+    <style>body{font-family:'SimSun','宋体',serif;margin:20px;font-size:14px;line-height:1.8}
+    table{border-collapse:collapse;width:100%}th,td{border:1px solid #ccc;padding:6px 8px}
+    th{background:#f0f0f0;font-weight:700}@media print{body{margin:0}th{background:#f0f0f0!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style>
+    </head><body>${content}</body></html>`);
+    w.document.close();
+    setTimeout(()=>w.print(),300);
+}
+
+function exportWord(){
+    const content=curTab===0?document.getElementById('salesPreview').innerHTML:document.getElementById('contractPreview').innerHTML;
+    const title=curTab===0?'销售清单':'购销合同';
+    const html=`<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+    <head><meta charset='utf-8'><title>${title}</title>
+    <style>body{font-family:'宋体',SimSun;font-size:14px;line-height:1.8;margin:40px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ccc;padding:6px 8px}th{background:#f0f0f0;font-weight:700}
+    @page{size:A4;margin:2cm}</style></head><body>${content}</body></html>`;
+    const blob=new Blob(['\ufeff',html],{type:'application/msword'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download=title+'_'+document.getElementById('sign_date').value+'.doc';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    toast('Word文件已下载','success');
+}
+</script>
+</body>
+</html>
