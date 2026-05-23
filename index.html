@@ -311,6 +311,7 @@
             <div class="form-group"><label>签订地点</label><input id="sign_place" placeholder="如：西藏自治区拉萨市"></div>
             <div class="form-group"><label>交货期限</label><input id="delivery_date" placeholder="如：合同签订后15个工作日内"></div>
             <div class="form-group"><label>付款方式</label><select id="pay_method"><option value="合同签订后一次性付清">一次性付清</option><option value="货到验收合格后一次性付清" selected>货到验收合格后付清</option><option value="预付30%，货到验收合格后付70%">预付30%+货到70%</option><option value="预付50%，货到验收合格后付50%">预付50%+货到50%</option><option value="月结30天">月结30天</option><option value="月结60天">月结60天</option></select></div>
+            <div class="form-group"><label>运费承担</label><select id="freight_method"><option value="乙方承担" selected>乙方承担</option><option value="甲方承担">甲方承担</option><option value="各承担50%">各承担50%</option><option value="运费到付（甲方收货时支付）">运费到付</option></select></div>
             <div class="form-group"><label>违约金比例</label><input id="penalty_rate" value="0.5" placeholder="每日千分之">%</div>
         </div>
     </div>
@@ -420,7 +421,7 @@ function generate(){
         aCredit:getVal('a_credit'),aAddr:getVal('a_addr'),aContact:getVal('a_contact'),aPhone:getVal('a_phone'),aDelivery:getVal('a_delivery')||getVal('a_addr'),aBank:getVal('a_bank'),aAccount:getVal('a_account'),
         bCredit:getVal('b_credit'),bAddr:getVal('b_addr'),bContact:getVal('b_contact'),bPhone:getVal('b_phone'),bDelivery:getVal('b_delivery')||getVal('b_addr'),bBank:getVal('b_bank'),bAccount:getVal('b_account'),
         contractNo:getVal('contract_no'),signDate:getVal('sign_date'),signPlace:getVal('sign_place'),
-        deliveryDate:getVal('delivery_date')||'合同签订后15个工作日内',payMethod:getVal('pay_method'),penaltyRate:getVal('penalty_rate')||'0.5',
+        deliveryDate:getVal('delivery_date')||'合同签订后15个工作日内',payMethod:getVal('pay_method'),freightMethod:getVal('freight_method'),penaltyRate:getVal('penalty_rate')||'0.5',
         totalAmt,totalQty,amtCN:amountCN(totalAmt)
     };
 
@@ -487,7 +488,7 @@ function genContract(info){
     <p>1. 交货方式：乙方负责将产品运送至甲方指定地点。</p>
     <p>2. 交货地址：<u>　${info.aDelivery||info.aAddr||'________'}　</u></p>
     <p>3. 交货期限：<u>　${info.deliveryDate}　</u>。</p>
-    <p>4. 运输费用及运输途中的风险由乙方承担。</p>
+    <p>4. 运输费用由<u>　${info.freightMethod}　</u>，运输途中的风险由乙方承担。</p>
 
     <p style="font-weight:700;margin:16px 0 8px">第四条　验收</p>
     <p>1. 甲方应在收到产品后5个工作日内进行验收。</p>
