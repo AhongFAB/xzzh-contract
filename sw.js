@@ -1,4 +1,4 @@
-const CACHE_NAME = 'contract-v3';
+const CACHE_NAME = 'contract-v4';
 const ASSETS = [
     './index.html',
     'https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js'
