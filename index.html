@@ -295,7 +295,6 @@
                 <div class="form-group"><label>地址</label><input id="b_addr" placeholder="公司注册地址"></div>
                 <div class="form-group"><label>联系人 *</label><input id="b_contact" placeholder="联系人姓名"></div>
                 <div class="form-group"><label>联系电话</label><input id="b_phone" placeholder="联系电话"></div>
-                <div class="form-group"><label>收货地址</label><input id="b_delivery" placeholder="乙方收货地址"></div>
                 <div class="form-group"><label>开户银行</label><input id="b_bank" placeholder="开户银行全称"></div>
                 <div class="form-group"><label>银行账号</label><input id="b_account" placeholder="银行账号"></div>
             </div>
@@ -410,7 +409,7 @@ function generate(){
     if(!aName||!bName){toast('请填写甲方和乙方公司名称','error');return}
     
     // 保存乙方信息
-    const bFields=['b_name','b_credit','b_addr','b_contact','b_phone','b_delivery','b_bank','b_account'];
+    const bFields=['b_name','b_credit','b_addr','b_contact','b_phone','b_bank','b_account'];
     const bSave={};bFields.forEach(k=>bSave[k]=getVal(k));
     localStorage.setItem('contract_party_b',JSON.stringify(bSave));
 
@@ -419,7 +418,7 @@ function generate(){
     const info={
         aName,bName,
         aCredit:getVal('a_credit'),aAddr:getVal('a_addr'),aContact:getVal('a_contact'),aPhone:getVal('a_phone'),aDelivery:getVal('a_delivery')||getVal('a_addr'),aBank:getVal('a_bank'),aAccount:getVal('a_account'),
-        bCredit:getVal('b_credit'),bAddr:getVal('b_addr'),bContact:getVal('b_contact'),bPhone:getVal('b_phone'),bDelivery:getVal('b_delivery')||getVal('b_addr'),bBank:getVal('b_bank'),bAccount:getVal('b_account'),
+        bCredit:getVal('b_credit'),bAddr:getVal('b_addr'),bContact:getVal('b_contact'),bPhone:getVal('b_phone'),bBank:getVal('b_bank'),bAccount:getVal('b_account'),
         contractNo:getVal('contract_no'),signDate:getVal('sign_date'),signPlace:getVal('sign_place'),
         deliveryDate:getVal('delivery_date')||'合同签订后15个工作日内',payMethod:getVal('pay_method'),freightMethod:getVal('freight_method'),penaltyRate:getVal('penalty_rate')||'0.5',
         totalAmt,totalQty,amtCN:amountCN(totalAmt)
@@ -434,21 +433,22 @@ function generate(){
 
 function genSalesList(info){
     const rows=items.map((it,i)=>`<tr><td style="text-align:center">${i+1}</td><td>${it.name}</td><td style="text-align:center">${it.spec||'-'}</td><td style="text-align:center">${it.qty}</td><td style="text-align:right">${it.price.toFixed(2)}</td><td style="text-align:right">${it.amount.toFixed(2)}</td></tr>`).join('');
-    return`<div style="font-family:'SimSun','宋体',serif;max-width:800px;margin:0 auto">
-    <h2 style="text-align:center;font-size:22px;margin-bottom:4px">销 售 清 单</h2>
-    <div style="text-align:center;color:#666;font-size:13px;margin-bottom:20px">编号：${info.contractNo}　　日期：${info.signDate}</div>
-    <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:16px">
-        <tr><td style="width:50%"><strong>买方（甲方）：</strong>${info.aName}</td><td><strong>卖方（乙方）：</strong>${info.bName}</td></tr>
-        <tr><td><strong>地址：</strong>${info.aAddr||'-'}</td><td><strong>地址：</strong>${info.bAddr||'-'}</td></tr>
-        <tr><td><strong>联系人：</strong>${info.aContact||'-'}　<strong>电话：</strong>${info.aPhone||'-'}</td><td><strong>联系人：</strong>${info.bContact||'-'}　<strong>电话：</strong>${info.bPhone||'-'}</td></tr>
-        <tr><td><strong>开户银行：</strong>${info.aBank||'-'}　<strong>银行账号：</strong>${info.aAccount||'-'}</td><td><strong>开户银行：</strong>${info.bBank||'-'}　<strong>银行账号：</strong>${info.bAccount||'-'}</td></tr>
+    return`<div style="font-family:'SimSun','宋体',serif;max-width:800px;margin:0 auto;padding:10px">
+    <h2 style="text-align:center;font-size:24px;margin-bottom:2px;letter-spacing:8px">销 售 清 单</h2>
+    <div style="width:60px;height:3px;background:#1e40af;margin:8px auto 16px;border-radius:2px"></div>
+    <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:20px">
+        <tr><td style="width:50%;padding:4px 0"><strong>买方（甲方）：</strong>${info.aName}</td><td style="padding:4px 0"><strong>卖方（乙方）：</strong>${info.bName}</td></tr>
+        <tr><td style="padding:4px 0"><strong>地址：</strong>${info.aAddr||'-'}</td><td style="padding:4px 0"><strong>地址：</strong>${info.bAddr||'-'}</td></tr>
+        <tr><td style="padding:4px 0"><strong>联系人：</strong>${info.aContact||'-'}　<strong>电话：</strong>${info.aPhone||'-'}</td><td style="padding:4px 0"><strong>联系人：</strong>${info.bContact||'-'}　<strong>电话：</strong>${info.bPhone||'-'}</td></tr>
+        <tr><td style="padding:4px 0"><strong>开户银行：</strong>${info.aBank||'-'}　<strong>银行账号：</strong>${info.aAccount||'-'}</td><td style="padding:4px 0"><strong>开户银行：</strong>${info.bBank||'-'}　<strong>银行账号：</strong>${info.bAccount||'-'}</td></tr>
     </table>
-    <table style="width:100%;border-collapse:collapse;font-size:12px;border-top:2px solid #000;border-bottom:2px solid #000">
-        <thead><tr style="background:#f0f0f0"><th style="border:1px solid #ccc;padding:8px 6px;width:40px">序号</th><th style="border:1px solid #ccc;padding:8px 6px">品名</th><th style="border:1px solid #ccc;padding:8px 6px;width:100px">规格</th><th style="border:1px solid #ccc;padding:8px 6px;width:60px">数量</th><th style="border:1px solid #ccc;padding:8px 6px;width:80px">单价</th><th style="border:1px solid #ccc;padding:8px 6px;width:100px">金额</th></tr></thead>
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:#666;margin-bottom:6px"><span>编号：${info.contractNo}</span><span>日期：${info.signDate}</span></div>
+    <table style="width:100%;border-collapse:collapse;font-size:12px;border-top:2px solid #1e40af;border-bottom:2px solid #1e40af">
+        <thead><tr style="background:#e8edf5"><th style="border:1px solid #c5cdd8;padding:10px 6px;width:40px;color:#1e3a8a">序号</th><th style="border:1px solid #c5cdd8;padding:10px 6px;color:#1e3a8a">品名</th><th style="border:1px solid #c5cdd8;padding:10px 6px;width:100px;color:#1e3a8a">规格</th><th style="border:1px solid #c5cdd8;padding:10px 6px;width:60px;color:#1e3a8a">数量</th><th style="border:1px solid #c5cdd8;padding:10px 6px;width:90px;color:#1e3a8a">单价(元)</th><th style="border:1px solid #c5cdd8;padding:10px 6px;width:110px;color:#1e3a8a">金额(元)</th></tr></thead>
         <tbody>${rows}
-        <tr style="font-weight:700;background:#f8f8f8"><td colspan="3" style="border:1px solid #ccc;padding:8px;text-align:right">合计</td><td style="border:1px solid #ccc;padding:8px;text-align:center">${info.totalQty}</td><td style="border:1px solid #ccc;padding:8px">-</td><td style="border:1px solid #ccc;padding:8px;text-align:right">${info.totalAmt.toFixed(2)}</td></tr></tbody>
+        <tr style="font-weight:700;background:#f0f4f8"><td colspan="3" style="border:1px solid #c5cdd8;padding:10px;text-align:right;color:#1e3a8a">合　计</td><td style="border:1px solid #c5cdd8;padding:10px;text-align:center">${info.totalQty}</td><td style="border:1px solid #c5cdd8;padding:10px">-</td><td style="border:1px solid #c5cdd8;padding:10px;text-align:right">${info.totalAmt.toFixed(2)}</td></tr></tbody>
     </table>
-    <div style="margin:16px 0;font-size:13px"><strong>合计金额（大写）：</strong>${info.amtCN}　　<strong>（小写）：</strong>¥${info.totalAmt.toFixed(2)}</div>
+    <div style="margin:18px 0;font-size:13px;padding:10px 12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:4px"><strong>合计金额（大写）：</strong><span style="color:#1e40af">${info.amtCN}</span>　　<strong>（小写）：</strong>¥${info.totalAmt.toFixed(2)}</div>
     <div style="display:flex;justify-content:space-between;margin-top:60px;font-size:13px">
         <div style="width:45%"><strong>甲方（买方）：</strong><br><br><br>签章：______________　　日期：__________</div>
         <div style="width:45%"><strong>乙方（卖方）：</strong><br><br><br>签章：______________　　日期：__________</div>
@@ -459,85 +459,88 @@ function genSalesList(info){
 function genContract(info){
     const rows=items.map((it,i)=>`<tr><td style="text-align:center">${i+1}</td><td>${it.name}</td><td style="text-align:center">${it.spec||'-'}</td><td style="text-align:center">${it.qty}</td><td style="text-align:right">${it.price.toFixed(2)}</td><td style="text-align:right">${it.amount.toFixed(2)}</td></tr>`).join('');
     const pr=info.penaltyRate;
-    return`<div style="font-family:'SimSun','宋体',serif;max-width:800px;margin:0 auto;font-size:14px;line-height:1.8">
-    <h2 style="text-align:center;font-size:22px;margin-bottom:4px">购 销 合 同</h2>
-    <div style="text-align:center;color:#666;font-size:13px;margin-bottom:20px">合同编号：${info.contractNo}</div>
-    <p style="margin-bottom:12px">签订日期：<u>　${info.signDate}　</u>　　签订地点：<u>　${info.signPlace||'________'}　</u></p>
-    <p style="margin-bottom:8px"><strong>甲方（买方）：</strong>${info.aName}${info.aCredit?'　　统一社会信用代码：'+info.aCredit:''}</p>
-    <p style="margin-bottom:8px">地址：${info.aAddr||'________'}　　联系人：${info.aContact||'________'}　　电话：${info.aPhone||'________'}</p>
-    <p style="margin-bottom:8px">开户银行：${info.aBank||'________'}　　银行账号：${info.aAccount||'________'}</p>
-    <p style="margin-bottom:8px"><strong>乙方（卖方）：</strong>${info.bName}${info.bCredit?'　　统一社会信用代码：'+info.bCredit:''}</p>
-    <p style="margin-bottom:8px">地址：${info.bAddr||'________'}　　联系人：${info.bContact||'________'}　　电话：${info.bPhone||'________'}</p>
-    <p style="margin-bottom:8px">开户银行：${info.bBank||'________'}　　银行账号：${info.bAccount||'________'}</p>
+    return`<div style="font-family:'SimSun','宋体',serif;max-width:800px;margin:0 auto;font-size:14px;line-height:1.8;padding:10px">
+    <h2 style="text-align:center;font-size:24px;margin-bottom:2px;letter-spacing:8px">购 销 合 同</h2>
+    <div style="width:60px;height:3px;background:#1e40af;margin:8px auto 16px;border-radius:2px"></div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;color:#666;margin-bottom:16px"><span>合同编号：${info.contractNo}</span><span>签订日期：${info.signDate}</span></div>
+    <div style="margin-bottom:16px;padding:14px 16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px">
+        <p style="margin-bottom:6px"><strong>甲方（买方）：</strong>${info.aName}${info.aCredit?'　　统一社会信用代码：'+info.aCredit:''}</p>
+        <p style="margin-bottom:6px;color:#444">地址：${info.aAddr||'________'}　　联系人：${info.aContact||'________'}　　电话：${info.aPhone||'________'}</p>
+        <p style="margin-bottom:6px;color:#444">开户银行：${info.aBank||'________'}　　银行账号：${info.aAccount||'________'}</p>
+        <div style="border-top:1px dashed #d1d5db;margin:10px 0"></div>
+        <p style="margin-bottom:6px"><strong>乙方（卖方）：</strong>${info.bName}${info.bCredit?'　　统一社会信用代码：'+info.bCredit:''}</p>
+        <p style="margin-bottom:6px;color:#444">地址：${info.bAddr||'________'}　　联系人：${info.bContact||'________'}　　电话：${info.bPhone||'________'}</p>
+        <p style="margin-bottom:0;color:#444">开户银行：${info.bBank||'________'}　　银行账号：${info.bAccount||'________'}</p>
+    </div>
     <p style="margin:16px 0;text-indent:2em">根据《中华人民共和国民法典》及相关法律法规的规定，甲乙双方在平等、自愿、公平、诚实信用的原则基础上，经协商一致，就甲方向乙方购买产品事宜，达成如下协议：</p>
 
-    <p style="font-weight:700;margin:16px 0 8px">第一条　产品名称、规格、数量及金额</p>
-    <table style="width:100%;border-collapse:collapse;font-size:12px;border-top:2px solid #000;border-bottom:2px solid #000">
-        <thead><tr style="background:#f0f0f0"><th style="border:1px solid #ccc;padding:6px;width:40px">序号</th><th style="border:1px solid #ccc;padding:6px">品名</th><th style="border:1px solid #ccc;padding:6px;width:100px">规格</th><th style="border:1px solid #ccc;padding:6px;width:60px">数量</th><th style="border:1px solid #ccc;padding:6px;width:80px">单价(元)</th><th style="border:1px solid #ccc;padding:6px;width:100px">金额(元)</th></tr></thead>
+    <p style="font-weight:700;margin:20px 0 8px;font-size:15px;color:#1e3a8a">第一条　产品名称、规格、数量及金额</p>
+    <table style="width:100%;border-collapse:collapse;font-size:12px;border-top:2px solid #1e40af;border-bottom:2px solid #1e40af">
+        <thead><tr style="background:#e8edf5"><th style="border:1px solid #c5cdd8;padding:10px 6px;width:40px;color:#1e3a8a">序号</th><th style="border:1px solid #c5cdd8;padding:10px 6px;color:#1e3a8a">品名</th><th style="border:1px solid #c5cdd8;padding:10px 6px;width:100px;color:#1e3a8a">规格</th><th style="border:1px solid #c5cdd8;padding:10px 6px;width:60px;color:#1e3a8a">数量</th><th style="border:1px solid #c5cdd8;padding:10px 6px;width:90px;color:#1e3a8a">单价(元)</th><th style="border:1px solid #c5cdd8;padding:10px 6px;width:110px;color:#1e3a8a">金额(元)</th></tr></thead>
         <tbody>${rows}
-        <tr style="font-weight:700;background:#f8f8f8"><td colspan="3" style="border:1px solid #ccc;padding:6px;text-align:right">合计</td><td style="border:1px solid #ccc;padding:6px;text-align:center">${info.totalQty}</td><td style="border:1px solid #ccc;padding:6px">-</td><td style="border:1px solid #ccc;padding:6px;text-align:right">${info.totalAmt.toFixed(2)}</td></tr></tbody>
+        <tr style="font-weight:700;background:#f0f4f8"><td colspan="3" style="border:1px solid #c5cdd8;padding:10px;text-align:right;color:#1e3a8a">合　计</td><td style="border:1px solid #c5cdd8;padding:10px;text-align:center">${info.totalQty}</td><td style="border:1px solid #c5cdd8;padding:10px">-</td><td style="border:1px solid #c5cdd8;padding:10px;text-align:right">${info.totalAmt.toFixed(2)}</td></tr></tbody>
     </table>
-    <p style="margin:8px 0;font-size:13px">合同总金额（大写）：<strong>${info.amtCN}</strong>　（小写）：¥${info.totalAmt.toFixed(2)}</p>
+    <div style="margin:10px 0;font-size:13px;padding:10px 12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:4px">合同总金额（大写）：<strong style="color:#1e40af">${info.amtCN}</strong>　（小写）：¥${info.totalAmt.toFixed(2)}</div>
 
-    <p style="font-weight:700;margin:16px 0 8px">第二条　质量标准</p>
-    <p>1. 乙方提供的产品应符合国家相关质量标准和行业规范，符合甲方要求的规格和技术参数。</p>
-    <p>2. 产品应具备相应的合格证明文件及检测报告（如适用）。</p>
-    <p>3. 产品的质量保证期自验收合格之日起不少于12个月，质保期内因产品质量问题造成的损失由乙方承担。</p>
+    <p style="font-weight:700;margin:20px 0 8px;font-size:15px;color:#1e3a8a">第二条　质量标准</p>
+    <p style="text-indent:2em">1. 乙方提供的产品应符合国家相关质量标准和行业规范，符合甲方要求的规格和技术参数。</p>
+    <p style="text-indent:2em">2. 产品应具备相应的合格证明文件及检测报告（如适用）。</p>
+    <p style="text-indent:2em">3. 产品的质量保证期自验收合格之日起不少于12个月，质保期内因产品质量问题造成的损失由乙方承担。</p>
 
-    <p style="font-weight:700;margin:16px 0 8px">第三条　交付方式及期限</p>
-    <p>1. 交货方式：乙方负责将产品运送至甲方指定地点。</p>
-    <p>2. 交货地址：<u>　${info.aDelivery||info.aAddr||'________'}　</u></p>
-    <p>3. 交货期限：<u>　${info.deliveryDate}　</u>。</p>
-    <p>4. 运输费用由<u>　${info.freightMethod}　</u>，运输途中的风险由乙方承担。</p>
+    <p style="font-weight:700;margin:20px 0 8px;font-size:15px;color:#1e3a8a">第三条　交付方式及期限</p>
+    <p style="text-indent:2em">1. 交货方式：乙方负责将产品运送至甲方指定地点。</p>
+    <p style="text-indent:2em">2. 交货地址：<u>　${info.aDelivery||info.aAddr||'________'}　</u></p>
+    <p style="text-indent:2em">3. 交货期限：<u>　${info.deliveryDate}　</u>。</p>
+    <p style="text-indent:2em">4. 运输费用由<u>　${info.freightMethod}　</u>，运输途中的风险由乙方承担。</p>
 
-    <p style="font-weight:700;margin:16px 0 8px">第四条　验收</p>
-    <p>1. 甲方应在收到产品后5个工作日内进行验收。</p>
-    <p>2. 验收标准：按本合同第一条约定的品名、规格、数量及第二条质量标准进行验收。</p>
-    <p>3. 如产品不符合约定，甲方有权拒收，乙方应在收到拒收通知后5日内更换或补足合格产品。</p>
-    <p>4. 验收合格后，甲方应签署验收确认单。</p>
+    <p style="font-weight:700;margin:20px 0 8px;font-size:15px;color:#1e3a8a">第四条　验收</p>
+    <p style="text-indent:2em">1. 甲方应在收到产品后5个工作日内进行验收。</p>
+    <p style="text-indent:2em">2. 验收标准：按本合同第一条约定的品名、规格、数量及第二条质量标准进行验收。</p>
+    <p style="text-indent:2em">3. 如产品不符合约定，甲方有权拒收，乙方应在收到拒收通知后5日内更换或补足合格产品。</p>
+    <p style="text-indent:2em">4. 验收合格后，甲方应签署验收确认单。</p>
 
-    <p style="font-weight:700;margin:16px 0 8px">第五条　付款方式及期限</p>
-    <p>1. 付款方式：<u>　${info.payMethod}　</u>。</p>
-    <p>2. 付款方式为银行转账的，甲方将款项汇入乙方指定银行账户。</p>
-    <p>3. 乙方应在收到货款后及时向甲方开具合法有效的增值税发票。</p>
+    <p style="font-weight:700;margin:20px 0 8px;font-size:15px;color:#1e3a8a">第五条　付款方式及期限</p>
+    <p style="text-indent:2em">1. 付款方式：<u>　${info.payMethod}　</u>。</p>
+    <p style="text-indent:2em">2. 付款方式为银行转账的，甲方将款项汇入乙方指定银行账户。</p>
+    <p style="text-indent:2em">3. 乙方应在收到货款后及时向甲方开具合法有效的增值税发票。</p>
 
-    <p style="font-weight:700;margin:16px 0 8px">第六条　包装标准</p>
-    <p>产品包装应符合国家及行业标准，满足运输及储存要求，确保产品在运输过程中不受损坏。因包装不当造成产品损坏的，由乙方承担责任。</p>
+    <p style="font-weight:700;margin:20px 0 8px;font-size:15px;color:#1e3a8a">第六条　包装标准</p>
+    <p style="text-indent:2em">产品包装应符合国家及行业标准，满足运输及储存要求，确保产品在运输过程中不受损坏。因包装不当造成产品损坏的，由乙方承担责任。</p>
 
-    <p style="font-weight:700;margin:16px 0 8px">第七条　违约责任</p>
-    <p>1. 乙方逾期交货的，每逾期一日，应向甲方支付合同总金额的<u>　${pr}%　</u>作为违约金；逾期超过15日的，甲方有权解除合同，乙方应返还已收取的款项并赔偿甲方因此遭受的损失。</p>
-    <p>2. 甲方逾期付款的，每逾期一日，应向乙方支付未付金额的<u>　${pr}%　</u>作为违约金。</p>
-    <p>3. 产品质量不符合约定的，乙方应免费更换或退货，并承担由此给甲方造成的全部损失。</p>
-    <p>4. 任何一方违反本合同其他约定的，应承担由此给对方造成的实际损失。</p>
+    <p style="font-weight:700;margin:20px 0 8px;font-size:15px;color:#1e3a8a">第七条　违约责任</p>
+    <p style="text-indent:2em">1. 乙方逾期交货的，每逾期一日，应向甲方支付合同总金额的<u>　${pr}%　</u>作为违约金；逾期超过15日的，甲方有权解除合同，乙方应返还已收取的款项并赔偿甲方因此遭受的损失。</p>
+    <p style="text-indent:2em">2. 甲方逾期付款的，每逾期一日，应向乙方支付未付金额的<u>　${pr}%　</u>作为违约金。</p>
+    <p style="text-indent:2em">3. 产品质量不符合约定的，乙方应免费更换或退货，并承担由此给甲方造成的全部损失。</p>
+    <p style="text-indent:2em">4. 任何一方违反本合同其他约定的，应承担由此给对方造成的实际损失。</p>
 
-    <p style="font-weight:700;margin:16px 0 8px">第八条　不可抗力</p>
-    <p>因不可抗力事件（包括但不限于自然灾害、战争、政府行为、疫情等）导致不能履行本合同的，根据不可抗力的影响，部分或全部免除受影响方的责任。但受影响方应在事件发生后3日内书面通知对方，并在15日内提供相关证明文件。</p>
+    <p style="font-weight:700;margin:20px 0 8px;font-size:15px;color:#1e3a8a">第八条　不可抗力</p>
+    <p style="text-indent:2em">因不可抗力事件（包括但不限于自然灾害、战争、政府行为、疫情等）导致不能履行本合同的，根据不可抗力的影响，部分或全部免除受影响方的责任。但受影响方应在事件发生后3日内书面通知对方，并在15日内提供相关证明文件。</p>
 
-    <p style="font-weight:700;margin:16px 0 8px">第九条　争议解决</p>
-    <p>本合同在履行过程中发生争议，双方应首先协商解决；协商不成的，任何一方均可向合同签订地有管辖权的人民法院提起诉讼。</p>
+    <p style="font-weight:700;margin:20px 0 8px;font-size:15px;color:#1e3a8a">第九条　争议解决</p>
+    <p style="text-indent:2em">本合同在履行过程中发生争议，双方应首先协商解决；协商不成的，任何一方均可向合同签订地有管辖权的人民法院提起诉讼。</p>
 
-    <p style="font-weight:700;margin:16px 0 8px">第十条　其他约定</p>
-    <p>1. 本合同一式两份，甲乙双方各执一份，具有同等法律效力。</p>
-    <p>2. 本合同自双方签字（盖章）之日起生效。</p>
-    <p>3. 本合同未尽事宜，双方可另行签订补充协议，补充协议与本合同具有同等法律效力。</p>
-    <p>4. 本合同的传真件、扫描件与原件具有同等法律效力。</p>
+    <p style="font-weight:700;margin:20px 0 8px;font-size:15px;color:#1e3a8a">第十条　其他约定</p>
+    <p style="text-indent:2em">1. 本合同一式两份，甲乙双方各执一份，具有同等法律效力。</p>
+    <p style="text-indent:2em">2. 本合同自双方签字（盖章）之日起生效。</p>
+    <p style="text-indent:2em">3. 本合同未尽事宜，双方可另行签订补充协议，补充协议与本合同具有同等法律效力。</p>
+    <p style="text-indent:2em">4. 本合同的传真件、扫描件与原件具有同等法律效力。</p>
 
-    <div style="margin-top:40px;font-size:14px">
+    <div style="margin-top:50px;font-size:14px">
         <div style="display:flex;justify-content:space-between">
             <div style="width:45%">
                 <p><strong>甲方（买方）：</strong>${info.aName}</p>
                 <p style="margin-top:30px">法定代表人或授权代表：</p>
-                <p style="border-bottom:1px solid #000;width:200px;margin:8px 0">&nbsp;</p>
+                <p style="border-bottom:1px solid #333;width:200px;margin:8px 0">&nbsp;</p>
                 <p>签章：</p>
-                <p style="border-bottom:1px solid #000;width:200px;margin:8px 0">&nbsp;</p>
+                <p style="border-bottom:1px solid #333;width:200px;margin:8px 0">&nbsp;</p>
                 <p>日期：________年____月____日</p>
             </div>
             <div style="width:45%">
                 <p><strong>乙方（卖方）：</strong>${info.bName}</p>
                 <p style="margin-top:30px">法定代表人或授权代表：</p>
-                <p style="border-bottom:1px solid #000;width:200px;margin:8px 0">&nbsp;</p>
+                <p style="border-bottom:1px solid #333;width:200px;margin:8px 0">&nbsp;</p>
                 <p>签章：</p>
-                <p style="border-bottom:1px solid #000;width:200px;margin:8px 0">&nbsp;</p>
+                <p style="border-bottom:1px solid #333;width:200px;margin:8px 0">&nbsp;</p>
                 <p>日期：________年____月____日</p>
             </div>
         </div>
@@ -551,8 +554,8 @@ function printDoc(){
     const w=window.open('','_blank');
     w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>${title}</title>
     <style>body{font-family:'SimSun','宋体',serif;margin:20px;font-size:14px;line-height:1.8}
-    table{border-collapse:collapse;width:100%}th,td{border:1px solid #ccc;padding:6px 8px}
-    th{background:#f0f0f0;font-weight:700}@media print{body{margin:0}th{background:#f0f0f0!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style>
+    table{border-collapse:collapse;width:100%}th,td{border:1px solid #c5cdd8;padding:8px}
+    th{background:#e8edf5;font-weight:700;color:#1e3a8a}@media print{body{margin:0}th{background:#e8edf5!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style>
     </head><body>${content}</body></html>`);
     w.document.close();
     setTimeout(()=>w.print(),300);
@@ -563,7 +566,7 @@ function exportWord(){
     const title=curTab===0?'销售清单':'购销合同';
     const html=`<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
     <head><meta charset='utf-8'><title>${title}</title>
-    <style>body{font-family:'宋体',SimSun;font-size:14px;line-height:1.8;margin:40px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ccc;padding:6px 8px}th{background:#f0f0f0;font-weight:700}
+    <style>body{font-family:'宋体',SimSun;font-size:14px;line-height:1.8;margin:40px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #c5cdd8;padding:8px}th{background:#e8edf5;font-weight:700;color:#1e3a8a}
     @page{size:A4;margin:2cm}</style></head><body>${content}</body></html>`;
     const blob=new Blob(['\ufeff',html],{type:'application/msword'});
     const a=document.createElement('a');
