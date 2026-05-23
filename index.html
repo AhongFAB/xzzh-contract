@@ -556,11 +556,7 @@ function printDoc(){
     <style>body{font-family:'SimSun','宋体',serif;margin:20px;font-size:14px;line-height:1.8}
     table{border-collapse:collapse;width:100%}th,td{border:1px solid #c5cdd8;padding:8px}
     th{background:#e8edf5;font-weight:700;color:#1e3a8a}@media print{body{margin:0}th{background:#e8edf5!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style>
-    </head><body>${content}
-<script>
-if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(function(e){console.log('SW注册失败:',e)})}
-</script>
-</body></html>`);
+    </head><body>${content}</body></html>`);
     w.document.close();
     setTimeout(()=>w.print(),300);
 }
@@ -571,11 +567,7 @@ function exportWord(){
     const html=`<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
     <head><meta charset='utf-8'><title>${title}</title>
     <style>body{font-family:'宋体',SimSun;font-size:14px;line-height:1.8;margin:40px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #c5cdd8;padding:8px}th{background:#e8edf5;font-weight:700;color:#1e3a8a}
-    @page{size:A4;margin:2cm}</style></head><body>${content}
-<script>
-if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(function(e){console.log('SW注册失败:',e)})}
-</script>
-</body></html>`;
+    @page{size:A4;margin:2cm}</style></head><body>${content}</body></html>`;
     const blob=new Blob(['\ufeff',html],{type:'application/msword'});
     const a=document.createElement('a');
     a.href=URL.createObjectURL(blob);
@@ -584,10 +576,6 @@ if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').cat
     URL.revokeObjectURL(a.href);
     toast('Word文件已下载','success');
 }
-</script>
-
-<script>
-if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(function(e){console.log('SW注册失败:',e)})}
 </script>
 </body>
 </html>
