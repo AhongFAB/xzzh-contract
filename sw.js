@@ -1,10 +1,9 @@
-const CACHE_NAME = 'contract-v2';
+const CACHE_NAME = 'contract-v3';
 const ASSETS = [
     './index.html',
     'https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js'
 ];
 
-// 安装 - 缓存核心资源
 self.addEventListener('install', function(event) {
     event.waitUntil(
         caches.open(CACHE_NAME).then(function(cache) {
@@ -14,7 +13,6 @@ self.addEventListener('install', function(event) {
     self.skipWaiting();
 });
 
-// 激活 - 清理旧缓存
 self.addEventListener('activate', function(event) {
     event.waitUntil(
         caches.keys().then(function(keys) {
@@ -30,7 +28,6 @@ self.addEventListener('activate', function(event) {
     self.clients.claim();
 });
 
-// 请求拦截 - 缓存优先，网络兜底
 self.addEventListener('fetch', function(event) {
     event.respondWith(
         caches.match(event.request).then(function(response) {
