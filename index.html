@@ -285,6 +285,8 @@
                 <div class="form-group"><label>联系人 *</label><input id="a_contact" placeholder="联系人姓名"></div>
                 <div class="form-group"><label>联系电话</label><input id="a_phone" placeholder="联系电话"></div>
                 <div class="form-group"><label>交货地址</label><input id="a_delivery" placeholder="如与注册地址不同请填写"></div>
+                <div class="form-group"><label>开户银行</label><input id="a_bank" placeholder="开户银行全称"></div>
+                <div class="form-group"><label>银行账号</label><input id="a_account" placeholder="银行账号"></div>
             </div>
             <div>
                 <div class="sub-title">🏭 乙方（卖方）</div>
@@ -415,7 +417,7 @@ function generate(){
     const totalQty=items.reduce((s,i)=>s+i.qty,0);
     const info={
         aName,bName,
-        aCredit:getVal('a_credit'),aAddr:getVal('a_addr'),aContact:getVal('a_contact'),aPhone:getVal('a_phone'),aDelivery:getVal('a_delivery')||getVal('a_addr'),
+        aCredit:getVal('a_credit'),aAddr:getVal('a_addr'),aContact:getVal('a_contact'),aPhone:getVal('a_phone'),aDelivery:getVal('a_delivery')||getVal('a_addr'),aBank:getVal('a_bank'),aAccount:getVal('a_account'),
         bCredit:getVal('b_credit'),bAddr:getVal('b_addr'),bContact:getVal('b_contact'),bPhone:getVal('b_phone'),bDelivery:getVal('b_delivery')||getVal('b_addr'),bBank:getVal('b_bank'),bAccount:getVal('b_account'),
         contractNo:getVal('contract_no'),signDate:getVal('sign_date'),signPlace:getVal('sign_place'),
         deliveryDate:getVal('delivery_date')||'合同签订后15个工作日内',payMethod:getVal('pay_method'),penaltyRate:getVal('penalty_rate')||'0.5',
@@ -438,6 +440,7 @@ function genSalesList(info){
         <tr><td style="width:50%"><strong>买方（甲方）：</strong>${info.aName}</td><td><strong>卖方（乙方）：</strong>${info.bName}</td></tr>
         <tr><td><strong>地址：</strong>${info.aAddr||'-'}</td><td><strong>地址：</strong>${info.bAddr||'-'}</td></tr>
         <tr><td><strong>联系人：</strong>${info.aContact||'-'}　<strong>电话：</strong>${info.aPhone||'-'}</td><td><strong>联系人：</strong>${info.bContact||'-'}　<strong>电话：</strong>${info.bPhone||'-'}</td></tr>
+        <tr><td><strong>开户银行：</strong>${info.aBank||'-'}　<strong>银行账号：</strong>${info.aAccount||'-'}</td><td><strong>开户银行：</strong>${info.bBank||'-'}　<strong>银行账号：</strong>${info.bAccount||'-'}</td></tr>
     </table>
     <table style="width:100%;border-collapse:collapse;font-size:12px;border-top:2px solid #000;border-bottom:2px solid #000">
         <thead><tr style="background:#f0f0f0"><th style="border:1px solid #ccc;padding:8px 6px;width:40px">序号</th><th style="border:1px solid #ccc;padding:8px 6px">品名</th><th style="border:1px solid #ccc;padding:8px 6px;width:100px">规格</th><th style="border:1px solid #ccc;padding:8px 6px;width:60px">数量</th><th style="border:1px solid #ccc;padding:8px 6px;width:80px">单价</th><th style="border:1px solid #ccc;padding:8px 6px;width:100px">金额</th></tr></thead>
@@ -461,6 +464,7 @@ function genContract(info){
     <p style="margin-bottom:12px">签订日期：<u>　${info.signDate}　</u>　　签订地点：<u>　${info.signPlace||'________'}　</u></p>
     <p style="margin-bottom:8px"><strong>甲方（买方）：</strong>${info.aName}${info.aCredit?'　　统一社会信用代码：'+info.aCredit:''}</p>
     <p style="margin-bottom:8px">地址：${info.aAddr||'________'}　　联系人：${info.aContact||'________'}　　电话：${info.aPhone||'________'}</p>
+    <p style="margin-bottom:8px">开户银行：${info.aBank||'________'}　　银行账号：${info.aAccount||'________'}</p>
     <p style="margin-bottom:8px"><strong>乙方（卖方）：</strong>${info.bName}${info.bCredit?'　　统一社会信用代码：'+info.bCredit:''}</p>
     <p style="margin-bottom:8px">地址：${info.bAddr||'________'}　　联系人：${info.bContact||'________'}　　电话：${info.bPhone||'________'}</p>
     <p style="margin-bottom:8px">开户银行：${info.bBank||'________'}　　银行账号：${info.bAccount||'________'}</p>
