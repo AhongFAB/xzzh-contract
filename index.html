@@ -258,6 +258,8 @@
     </style>
 </head>
 <body>
+<a href="https://ahongfab.github.io/xzzh-portal/" class="back-to-portal" title="返回首页">&#8592;</a>
+
 <div class="container">
     <header><h1>📝 销售清单及合同生成器</h1><p>上传销售清单，自动生成规范销售单及购销合同</p></header>
 
@@ -567,7 +569,35 @@ function exportWord(){
     const html=`<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
     <head><meta charset='utf-8'><title>${title}</title>
     <style>body{font-family:'宋体',SimSun;font-size:14px;line-height:1.8;margin:40px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #c5cdd8;padding:8px}th{background:#e8edf5;font-weight:700;color:#1e3a8a}
-    @page{size:A4;margin:2cm}</style></head><body>${content}</body></html>`;
+    @page{size:A4;margin:2cm}
+/* 返回前台按钮 */
+.back-to-portal {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: 99999;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(30, 78, 121, 0.9);
+    border: 2px solid rgba(255,255,255,0.3);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 20px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+.back-to-portal:hover {
+    background: rgba(30, 78, 121, 1);
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+</style></head><body>${content}</body></html>`;
     const blob=new Blob(['\ufeff',html],{type:'application/msword'});
     const a=document.createElement('a');
     a.href=URL.createObjectURL(blob);
