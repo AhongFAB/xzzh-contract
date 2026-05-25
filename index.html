@@ -10,142 +10,119 @@
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
         :root {
-    --bg: #0a0a1a;
-    --bg-gradient: linear-gradient(135deg, #0a0a1a 0%, #0d1b2a 30%, #1b2838 60%, #0a0a1a 100%);
-    --glass: rgba(255, 255, 255, 0.06);
-    --glass-strong: rgba(255, 255, 255, 0.10);
-    --glass-border: rgba(255, 255, 255, 0.12);
-    --glass-highlight: rgba(255, 255, 255, 0.18);
-    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.2);
-    --blur: 20px;
-    --blur-strong: 40px;
-    --text-primary: rgba(255, 255, 255, 0.92);
-    --text-secondary: rgba(255, 255, 255, 0.60);
-    --text-muted: rgba(255, 255, 255, 0.38);
-    --primary: #4facfe;
-    --primary-dark: #2d8cf0;
-    --primary-glow: rgba(79, 172, 254, 0.25);
-    --success: #43e97b;
-    --success-dark: #38d96a;
-    --warning: #ffa726;
-    --danger: #ff5252;
-    --border: rgba(255, 255, 255, 0.08);
-    --input-bg: rgba(255, 255, 255, 0.05);
-    --input-border: rgba(255, 255, 255, 0.12);
-    --br: 20px;
-    --br-sm: 14px;
-}
+            --bg: #0f172a;
+            --card: rgba(30, 41, 59, 0.8);
+            --card-border: rgba(148, 163, 184, 0.1);
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --success: #10b981;
+            --success-dark: #059669;
+            --warning: #f97316;
+            --danger: #ef4444;
+            --border: rgba(148, 163, 184, 0.15);
+            --input-bg: rgba(15, 23, 42, 0.6);
+            --input-border: rgba(148, 163, 184, 0.2);
+            --shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            --br: 16px;
+            --br-sm: 12px;
+        }
         
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
         body {
-    font-family: -apple-system, 'SF Pro Display', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-    background: var(--bg);
-    background-image: var(--bg-gradient);
-    color: var(--text-primary);
-    line-height: 1.6;
-    min-height: 100vh;
-    overflow-x: hidden;
-}
-/* 液态背景光效 */
-body::before {
-    content: '';
-    position: fixed;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: 
-        radial-gradient(ellipse 600px 400px at 20% 30%, rgba(79, 172, 254, 0.08) 0%, transparent 70%),
-        radial-gradient(ellipse 500px 500px at 80% 70%, rgba(67, 233, 123, 0.06) 0%, transparent 70%),
-        radial-gradient(ellipse 400px 300px at 60% 20%, rgba(168, 85, 247, 0.05) 0%, transparent 70%);
-    animation: liquidBg 20s ease-in-out infinite alternate;
-    pointer-events: none;
-    z-index: 0;
-}
-@keyframes liquidBg {
-    0% { transform: translate(0, 0) rotate(0deg); }
-    33% { transform: translate(2%, -1%) rotate(1deg); }
-    66% { transform: translate(-1%, 2%) rotate(-0.5deg); }
-    100% { transform: translate(1%, -2%) rotate(0.5deg); }
-}
+            font-family: 'PingFang SC', 'Microsoft YaHei', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(ellipse at 20% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(16, 185, 129, 0.06) 0%, transparent 50%);
+        }
         
-        .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    position: relative;
-    z-index: 1;
-}
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
         
-        header, .header {
-    background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%);
-    backdrop-filter: blur(var(--blur-strong)) saturate(180%);
-    -webkit-backdrop-filter: blur(var(--blur-strong)) saturate(180%);
-    border: 1px solid var(--glass-highlight);
-    border-radius: var(--br);
-    color: var(--text-primary);
-    padding: 20px 28px;
-    margin-bottom: 24px;
-    box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255,255,255,0.1);
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-}
-header::before, .
-header h1, .
-header h1::before, 
-header p, .
+        header {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+            border: 1px solid rgba(148, 163, 184, 0.15);
+            color: #fff;
+            padding: 28px 32px;
+            border-radius: var(--br);
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--success), var(--primary));
+        }
+        header h1 { font-size: 26px; margin-bottom: 6px; background: linear-gradient(135deg, #fff, #93c5fd); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        header p { opacity: 0.8; font-size: 14px; color: var(--text-secondary); }
         
+        .step {
+            background: var(--card);
+            border: 1px solid var(--card-border);
+            border-radius: var(--br);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
         
-        
-        
-        .step, .upload-card, .card {
-    background: linear-gradient(135deg, var(--glass) 0%, rgba(255,255,255,0.03) 100%);
-    backdrop-filter: blur(var(--blur)) saturate(150%);
-    -webkit-backdrop-filter: blur(var(--blur)) saturate(150%);
-    border: 1px solid var(--glass-border);
-    border-radius: var(--br);
-    padding: 24px;
-    box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255,255,255,0.06);
-    margin-bottom: 20px;
-    position: relative;
-}
-.step::before, .upload-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 20px;
-    right: 20px;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
-}
-        
-        .step-title { font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-        .step-title .num { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: #fff; width: 28px; height: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; box-shadow: 0 4px 12px var(--primary-glow); }
+        .step-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .step-title .num {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
         
         .upload-zone {
-    border: 2px dashed rgba(255,255,255,0.12);
-    border-radius: var(--br-sm);
-    padding: 40px 20px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    background: rgba(255,255,255,0.02);
-}
-.upload-zone:hover {
-    border-color: var(--primary);
-    background: rgba(79, 172, 254, 0.06);
-    box-shadow: 0 0 30px rgba(79, 172, 254, 0.08);
-}
+            border: 2px dashed rgba(148, 163, 184, 0.3);
+            border-radius: var(--br-sm);
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(15, 23, 42, 0.4);
+        }
         .upload-zone:hover {
             border-color: var(--primary);
             background: rgba(59, 130, 246, 0.05);
             box-shadow: 0 0 20px rgba(59, 130, 246, 0.1);
         }
-        .file-info { margin-top: 12px; padding: 12px; background: rgba(79,172,254,0.08); border: 1px solid rgba(79,172,254,0.15); border-radius: var(--br-sm); display: none; }
+        .file-info {
+            margin-top: 12px;
+            padding: 12px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: var(--br-sm);
+            display: none;
+        }
         .file-info.show { display: block; }
         .file-info .name { font-weight: 600; color: #93c5fd; }
         .file-info .hint { color: var(--text-secondary); }
@@ -156,23 +133,15 @@ header p, .
         .form-group { display: flex; flex-direction: column; gap: 6px; }
         .form-group label { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
         .form-group input, .form-group select, .form-group textarea {
-    padding: 10px 14px;
-    border: 1px solid var(--input-border);
-    border-radius: var(--br-sm);
-    font-size: 14px;
-    font-family: inherit;
-    transition: all 0.3s ease;
-    background: var(--input-bg);
-    backdrop-filter: blur(10px);
-    color: var(--text-primary);
-}
-.form-group input::placeholder, .form-group textarea::placeholder { color: var(--text-muted); }
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px var(--primary-glow), 0 0 20px rgba(79, 172, 254, 0.15);
-    background: rgba(255, 255, 255, 0.08);
-}
+            padding: 10px 12px;
+            border: 1px solid var(--input-border);
+            border-radius: var(--br-sm);
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            background: var(--input-bg);
+            color: var(--text-primary);
+        }
         .form-group input::placeholder, .form-group textarea::placeholder { color: var(--text-muted); }
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
             outline: none;
@@ -191,65 +160,51 @@ header p, .
             border-bottom: 1px solid rgba(59, 130, 246, 0.2);
         }
         
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--br-sm);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
         .btn-primary {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-    color: #fff;
-    box-shadow: 0 4px 15px var(--primary-glow), inset 0 1px 0 rgba(255,255,255,0.2);
-    border: 1px solid rgba(255,255,255,0.15);
-}
-.btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px var(--primary-glow), inset 0 1px 0 rgba(255,255,255,0.25);
-}
-.btn-success {
-    background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
-    color: #fff;
-    box-shadow: 0 4px 15px rgba(67, 233, 123, 0.25), inset 0 1px 0 rgba(255,255,255,0.2);
-    border: 1px solid rgba(255,255,255,0.15);
-}
-.btn-secondary {
-    background: var(--glass);
-    color: var(--text-secondary);
-    border: 1px solid var(--glass-border);
-    backdrop-filter: blur(10px);
-}
-.btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 12px 24px;
-    border-radius: var(--br-sm);
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    border: none;
-}
-        
-        
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4); }
         .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
-        
-        
-        
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), var(--success-dark));
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        .btn-success:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4); }
+        .btn-secondary {
+            background: rgba(148, 163, 184, 0.1);
+            color: var(--text-secondary);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
         .btn-secondary:hover { background: rgba(148, 163, 184, 0.15); color: var(--text-primary); }
         .btn-sm { padding: 8px 16px; font-size: 13px; }
         
         .action-bar { display: flex; justify-content: center; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
         
         .tabs {
-    display: flex;
-    gap: 4px;
-    background: var(--glass);
-    padding: 6px;
-    border-radius: var(--br);
-    backdrop-filter: blur(var(--blur));
-    -webkit-backdrop-filter: blur(var(--blur));
-    margin-bottom: 20px;
-    border: 1px solid var(--glass-border);
-}
-
-
-
+            display: flex;
+            gap: 4px;
+            background: var(--card);
+            padding: 6px;
+            border-radius: var(--br);
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            border: 1px solid var(--card-border);
+        }
         .tab-btn {
             padding: 12px 24px;
             border: none;
@@ -270,7 +225,7 @@ header p, .
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         
-        .doc-preview { background: #fff; 
+        .doc-preview {
             background: #fff;
             border: 1px solid var(--border);
             border-radius: var(--br-sm);
@@ -280,7 +235,18 @@ header p, .
             color: #1e293b;
         }
         
-        .toast { position: fixed; top: 20px; right: 20px; padding: 14px 24px; border-radius: var(--br-sm); font-size: 14px; z-index: 99999; animation: slideIn 0.3s ease; backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.15); }
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            border-radius: var(--br-sm);
+            font-size: 14px;
+            z-index: 9999;
+            animation: slideIn 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid;
+        }
         .toast-success { background: rgba(16, 185, 129, 0.9); color: #fff; border-color: var(--success); }
         .toast-error { background: rgba(239, 68, 68, 0.9); color: #fff; border-color: var(--danger); }
         .toast-info { background: rgba(59, 130, 246, 0.9); color: #fff; border-color: var(--primary); }
@@ -289,78 +255,11 @@ header p, .
         
         footer { text-align: center; padding: 24px; color: var(--text-muted); font-size: 12px; }
         .hint { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
-    
-/* 返回门户按钮 */
-.back-to-portal {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    min-width: 36px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.08);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.18);
-    color: var(--text-primary);
-    text-decoration: none;
-    font-size: 18px;
-    flex-shrink: 0;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.1);
-    cursor: pointer;
-    line-height: 1;
-}
-.back-to-portal:hover {
-    background: rgba(255,255,255,0.15);
-    transform: scale(1.08);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.15);
-}
-
-    
-/* 底部条款 */
-.terms-section {
-    margin-top: 32px;
-    padding: 20px 24px;
-    background: rgba(255,255,255,0.03);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: var(--br);
-}
-.terms-section h3 {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-muted);
-    margin-bottom: 12px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-}
-.terms-section ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-.terms-section li {
-    font-size: 12px;
-    color: var(--text-muted);
-    line-height: 1.8;
-    padding-left: 16px;
-    position: relative;
-}
-.terms-section li::before {
-    content: '·';
-    position: absolute;
-    left: 4px;
-    color: var(--text-muted);
-}
-
     </style>
 </head>
 <body>
-
 <div class="container">
-    <header><a href="https://ahongfab.github.io/xzzh-portal/" class="back-to-portal" title="返回首页">&#8592;</a>
-        <div><h1>📝 销售清单及合同生成器</h1><p>上传销售清单，自动生成规范销售单及购销合同</p></div></header>
+    <header><h1>📝 销售清单及合同生成器</h1><p>上传销售清单，自动生成规范销售单及购销合同</p></header>
 
     <!-- Step 1: 上传 -->
     <div class="step">
@@ -435,7 +334,7 @@ header p, .
         <div class="tab-content" id="tab1"><div class="doc-preview" id="contractPreview"></div></div>
     </div>
 </div>
-<footer>© 2026 销售清单及合同生成器 · 开发者：张洪杰 · 侵权必究</footer>
+<footer>© 2026 中台-财务工具箱 · 开发者：张洪杰 · 版权所有 · 未经授权禁止复制、传播或商业使用 · 侵权必究</footer>
 
 <script>
 let items=[],curTab=0;
@@ -657,7 +556,11 @@ function printDoc(){
     <style>body{font-family:'SimSun','宋体',serif;margin:20px;font-size:14px;line-height:1.8}
     table{border-collapse:collapse;width:100%}th,td{border:1px solid #c5cdd8;padding:8px}
     th{background:#e8edf5;font-weight:700;color:#1e3a8a}@media print{body{margin:0}th{background:#e8edf5!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style>
-    </head><body>${content}</body></html>`);
+    </head><body>${content}
+<script>
+if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(function(e){console.log('SW注册失败:',e)})}
+</script>
+</body></html>`);
     w.document.close();
     setTimeout(()=>w.print(),300);
 }
@@ -668,8 +571,11 @@ function exportWord(){
     const html=`<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
     <head><meta charset='utf-8'><title>${title}</title>
     <style>body{font-family:'宋体',SimSun;font-size:14px;line-height:1.8;margin:40px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #c5cdd8;padding:8px}th{background:#e8edf5;font-weight:700;color:#1e3a8a}
-    @page{size:A4;margin:2cm}
-</style></head><body>${content}</body></html>`;
+    @page{size:A4;margin:2cm}</style></head><body>${content}
+<script>
+if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(function(e){console.log('SW注册失败:',e)})}
+</script>
+</body></html>`;
     const blob=new Blob(['\ufeff',html],{type:'application/msword'});
     const a=document.createElement('a');
     a.href=URL.createObjectURL(blob);
@@ -680,16 +586,8 @@ function exportWord(){
 }
 </script>
 
-
-<div class="terms-section">
-    <h3>📌 使用须知</h3>
-    <ul>
-        <li>本工具生成的合同文本仅供参考，不构成法律意见。正式签署前建议由专业人员审核。</li>
-        <li>生成的合同应基于真实发生的交易，不得用于虚构业务。</li>
-        <li>所有上传数据仅在本地浏览器处理，不会上传至任何服务器，关闭页面后数据自动清除。</li>
-        <li>本工具按现状提供，不对结果的绝对准确性和完整性作出保证。</li>
-    </ul>
-</div>
-
+<script>
+if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(function(e){console.log('SW注册失败:',e)})}
+</script>
 </body>
 </html>
